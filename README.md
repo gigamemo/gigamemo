@@ -19,3 +19,5 @@ Gigamemo provides a clean, distraction-free environment to create, organize, and
 - **Backend:** PHP 8.3+ / Symfony 7.4
 - **Database:** MySQL / MariaDB with Doctrine ORM
 - **Frontend:** Twig, Bootstrap, AssetMapper, Stimulus & Hotwire Turbo
+
+## Add new contributor TutoDevWeb
