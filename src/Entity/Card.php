@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CardRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -52,6 +54,18 @@ class Card
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $answerTemplate = null;
+
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'questionCard')]
+    private Collection $questionImages;
+
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'answerCard')]
+    private Collection $answerImages;
 
     public function getId(): ?int
     {
@@ -214,6 +228,66 @@ class Card
         return $this;
     }
 
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getQuestionImages(): Collection
+    {
+        return $this->questionImages;
+    }
+
+    public function addQuestionImage(Image $questionImage): static
+    {
+        if (!$this->questionImages->contains($questionImage)) {
+            $this->questionImages->add($questionImage);
+            $questionImage->setQuestionCard($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuestionImage(Image $questionImage): static
+    {
+        if ($this->questionImages->removeElement($questionImage)) {
+            // set the owning side to null (unless already changed)
+            if ($questionImage->getQuestionCard() === $this) {
+                $questionImage->setQuestionCard(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getAnswerImages(): Collection
+    {
+        return $this->answerImages;
+    }
+
+    public function addAnswerImage(Image $answerImage): static
+    {
+        if (!$this->answerImages->contains($answerImage)) {
+            $this->answerImages->add($answerImage);
+            $answerImage->setAnswerCard($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnswerImage(Image $answerImage): static
+    {
+        if ($this->answerImages->removeElement($answerImage)) {
+            // set the owning side to null (unless already changed)
+            if ($answerImage->getAnswerCard() === $this) {
+                $answerImage->setAnswerCard(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function __construct()
     {
         $this->countLearning   = 0;
@@ -225,5 +299,7 @@ class Card
         $this->nextDisplayDate = new \DateTimeImmutable();
         $this->easyFactor      = 0.0;
         $this->interval        = 0;
+        $this->questionImages = new ArrayCollection();
+        $this->answerImages = new ArrayCollection();
     }
 }
