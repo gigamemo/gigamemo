@@ -38,11 +38,18 @@ class Deck
     #[ORM\Column(nullable: true)]
     private ?int $position = null;
 
+    /**
+     * @var Collection<int, Card>
+     */
+    #[ORM\OneToMany(targetEntity: Card::class, mappedBy: 'deck')]
+    private Collection $cards;
+
     public function __construct()
     {
         $this->deckChilds = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->cards = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -136,6 +143,36 @@ class Deck
     public function setPosition(?int $position): static
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Card>
+     */
+    public function getCards(): Collection
+    {
+        return $this->cards;
+    }
+
+    public function addCard(Card $card): static
+    {
+        if (!$this->cards->contains($card)) {
+            $this->cards->add($card);
+            $card->setDeck($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCard(Card $card): static
+    {
+        if ($this->cards->removeElement($card)) {
+            // set the owning side to null (unless already changed)
+            if ($card->getDeck() === $this) {
+                $card->setDeck(null);
+            }
+        }
 
         return $this;
     }

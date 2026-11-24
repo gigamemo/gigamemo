@@ -67,6 +67,10 @@ class Card
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'answerCard')]
     private Collection $answerImages;
 
+    #[ORM\ManyToOne(inversedBy: 'cards')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Deck $deck = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -301,5 +305,17 @@ class Card
         $this->interval        = 0;
         $this->questionImages = new ArrayCollection();
         $this->answerImages = new ArrayCollection();
+    }
+
+    public function getDeck(): ?Deck
+    {
+        return $this->deck;
+    }
+
+    public function setDeck(?Deck $deck): static
+    {
+        $this->deck = $deck;
+
+        return $this;
     }
 }
